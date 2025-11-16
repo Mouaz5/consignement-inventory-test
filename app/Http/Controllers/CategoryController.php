@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreCategoryRequest;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -19,11 +19,9 @@ class CategoryController extends Controller
     /**
      * Store new category
      */
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-        ]);
+        $validated = $request->validated();
 
         $category = Category::create($validated);
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Good;
 use App\Models\Category;
+use App\Http\Requests\StoreGoodRequest;
+use App\Http\Requests\UpdateGoodRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -53,7 +55,7 @@ class GoodsController extends Controller
     /**
      * Store new good
      */
-    public function store(Request $request)
+    public function store(StoreGoodRequest $request)
     {
         $vendor = $request->user()->vendor;
 
@@ -61,14 +63,7 @@ class GoodsController extends Controller
             return response()->json(['error' => 'Only vendors can manage goods'], 403);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'price' => 'required|numeric|min:0',
-            'quantity' => 'required|numeric|min:0',
-            'recived_date' => 'required|date',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+        $validated = $request->validated();
 
         $good = Good::create([
             ...$validated,
@@ -103,7 +98,7 @@ class GoodsController extends Controller
     /**
      * Update good
      */
-    public function update(Good $good, Request $request)
+    public function update(Good $good, UpdateGoodRequest $request)
     {
         $vendor = $request->user()->vendor;
 
@@ -111,14 +106,7 @@ class GoodsController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'price' => 'required|numeric|min:0',
-            'quantity' => 'required|numeric|min:0',
-            'recived_date' => 'required|date',
-            'category_id' => 'required|exists:categories,id',
-        ]);
+        $validated = $request->validated();
 
         $good->update($validated);
 

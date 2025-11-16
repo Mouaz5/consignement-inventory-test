@@ -6,6 +6,8 @@ use App\Models\Good;
 use App\Models\Vendor;
 use App\Models\Category;
 use App\Models\Receipt;
+use App\Http\Requests\PrintReceiptRequest;
+use App\Http\Requests\PrintCustomReceiptRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -57,11 +59,9 @@ class InventoryController extends Controller
     /**
      * Print receipt for selected vendor
      */
-    public function printReceipt(Request $request)
+    public function printReceipt(PrintReceiptRequest $request)
     {
-        $validated = $request->validate([
-            'vendor_id' => 'required|exists:vendors,id',
-        ]);
+        $validated = $request->validated();
 
         $vendor = Vendor::with('user')->findOrFail($validated['vendor_id']);
         $goods = Good::where('vendor_id', $vendor->id)
@@ -91,13 +91,9 @@ class InventoryController extends Controller
     /**
      * Print custom receipt with selected goods
      */
-    public function printCustomReceipt(Request $request)
+    public function printCustomReceipt(PrintCustomReceiptRequest $request)
     {
-        $validated = $request->validate([
-            'vendor_id' => 'required|exists:vendors,id',
-            'goods' => 'required|array',
-            'goods.*.id' => 'required|exists:goods,id',
-        ]);
+        $validated = $request->validated();
 
         $vendor = Vendor::with('user')->findOrFail($validated['vendor_id']);
         $goodIds = array_column($validated['goods'], 'id');
