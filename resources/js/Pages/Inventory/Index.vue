@@ -2,7 +2,7 @@
   <AppLayout>
     <div class="max-w-7xl mx-auto px-4 py-8">
       <div class="bg-white rounded-lg shadow-lg p-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">Inventory Management</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">User</h1>
 
         <!-- Filters Section -->
         <div class="bg-gray-50 p-6 rounded-lg mb-8">
