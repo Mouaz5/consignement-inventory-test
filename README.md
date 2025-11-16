@@ -1,59 +1,254 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Consignment Inventory Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern web application for managing consignment inventory with vendor management, goods tracking, and receipt generation. Built with Laravel, Inertia.js, and Vue 3.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **User Authentication** - Sanctum token-based API authentication
+- **Role-Based Access** - Support for vendors and regular users
+- **Inventory Management** - List and filter goods by vendor, category, name, and date range
+- **Vendor Management** - Vendors can add, edit, and delete their goods
+- **Receipt Generation** - Generate and print receipts for selected vendors
+- **Category Management** - Create and manage product categories
+- **Responsive Design** - Beautiful UI with TailwindCSS
+- **Pagination** - Efficient data loading with pagination
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Backend**: Laravel 12, PHP 8.2+
+- **Frontend**: Vue 3, Inertia.js, TailwindCSS
+- **Authentication**: Laravel Sanctum
+- **Database**: MySQL
+- **Build Tool**: Vite
 
-## Learning Laravel
+## Prerequisites
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Before you begin, ensure you have the following installed:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **PHP** 8.2 or higher
+- **Composer** (PHP package manager)
+- **Node.js** 18+ and npm
+- **Git**
 
-## Laravel Sponsors
+## Installation & Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Clone the Repository
 
-### Premium Partners
+```bash
+git clone <repository-url>
+cd consignment-inventory
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Install PHP Dependencies
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Install Node Dependencies
 
-## Code of Conduct
+```bash
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 4. Environment Configuration
 
-## Security Vulnerabilities
+Copy the example environment file and generate an application key:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 5. Database Setup
+
+configure MySQL in `.env`:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=consignment_inventory
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 6. Run Migrations
+
+```bash
+php artisan migrate
+```
+
+### 7. Seed Categories (Optional)
+
+```bash
+php artisan db:seed
+```
+
+Or manually add categories via the UI.
+
+## Running the Project
+
+### Development Mode
+
+**Terminal 1 - Start Laravel Development Server:**
+
+```bash
+php artisan serve
+```
+
+The application will be available at `http://localhost:8000`
+
+**Terminal 2 - Start Vite Development Server:**
+
+```bash
+npm run dev
+```
+
+This enables hot module reloading for Vue components.
+
+### Production Build
+
+```bash
+npm run build
+php artisan serve
+```
+
+## Project Structure
+
+```
+consignment-inventory/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── AuthController.php
+│   │       ├── InventoryController.php
+│   │       ├── GoodsController.php
+│   │       ├── CategoryController.php
+│   │       └── ProfileController.php
+│   └── Models/
+│       ├── User.php
+│       ├── Vendor.php
+│       ├── Good.php
+│       ├── Category.php
+│       └── Receipt.php
+├── database/
+│   └── migrations/
+├── resources/
+│   ├── js/
+│   │   ├── Pages/
+│   │   │   ├── Auth/
+│   │   │   ├── Inventory/
+│   │   │   ├── Vendor/Goods/
+│   │   │   └── Categories/
+│   │   ├── Components/
+│   │   ├── Layouts/
+│   │   └── app.js
+│   └── views/
+│       └── app.blade.php
+├── routes/
+│   ├── web.php
+│   └── api.php
+└── composer.json
+```
+
+## Usage
+
+### Register & Login
+
+1. Visit `http://localhost:8000/register`
+2. Create an account with:
+   - Name, Email, Password
+   - Phone, Address
+   - Role (Vendor or User)
+3. Login at `http://localhost:8000/login`
+
+### For Regular Users
+
+- View all inventory items
+- Filter by vendor, category, name, or date range
+- Generate and print receipts for vendors
+
+### For Vendors
+
+- Manage your goods (Add, Edit, Delete)
+- Create new categories if needed
+- View your inventory
+
+## API Endpoints
+
+### Authentication
+- `POST /api/register` - Register new user
+- `POST /api/login` - Login user
+- `POST /api/logout` - Logout user
+- `GET /api/user` - Get authenticated user
+
+### Inventory (Web Routes)
+- `GET /inventory` - View inventory with filters
+- `POST /inventory/receipt` - Generate receipt
+- `GET /inventory/receipt/{receiptId}` - View receipt
+
+### Vendor Goods
+- `GET /vendor/goods` - List vendor's goods
+- `POST /vendor/goods` - Create good
+- `GET /vendor/goods/{id}/edit` - Edit good
+- `PUT /vendor/goods/{id}` - Update good
+- `DELETE /vendor/goods/{id}` - Delete good
+
+### Categories
+- `GET /categories/create` - Create category form
+- `POST /categories` - Store category
+
+## Database Schema
+
+### Users Table
+- id, name, email, password, phone, address, role, created_at, updated_at
+
+### Vendors Table
+- id, user_id, phone, address, created_at, updated_at
+
+### Goods Table
+- id, vendor_id, category_id, name, description, price, quantity, recived_date, created_at, updated_at
+
+### Categories Table
+- id, name, created_at, updated_at
+
+### Receipts Table
+- id, vendor_id, user_id, total_amount, printed_at, created_at, updated_at
+
+## Troubleshooting
+
+### Port 8000 Already in Use
+
+```bash
+php artisan serve --port=8001
+```
+
+### Database Connection Error
+
+Ensure `.env` has correct database configuration and the database file/server is running.
+
+### npm Dependencies Issues
+
+```bash
+rm -rf node_modules package-lock.json
+npm install
+```
+
+### Clear Application Cache
+
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+```
+
+## Development Tips
+
+- Use `php artisan tinker` for interactive shell
+- Check logs in `storage/logs/laravel.log`
+- Use `php artisan migrate:fresh --seed` to reset database
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-sourced software licensed under the MIT license.

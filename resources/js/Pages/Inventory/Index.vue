@@ -86,37 +86,19 @@
           </form>
         </div>
 
-        <!-- Print Receipt Section -->
-        <div class="bg-blue-50 p-6 rounded-lg mb-8 border border-blue-200">
-          <h2 class="text-lg font-semibold text-gray-800 mb-4">Print Receipt</h2>
-          <div class="flex gap-4 items-end">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Select Vendor</label>
-              <select
-                v-model="selectedVendorForReceipt"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              >
-                <option value="">Choose a vendor...</option>
-                <option v-for="vendor in vendors" :key="vendor.id" :value="vendor.id">
-                  {{ vendor.user.name }}
-                </option>
-              </select>
-            </div>
-            <button
-              @click="handlePrintReceipt"
-              :disabled="!selectedVendorForReceipt || loadingReceipt"
-              class="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold py-2 px-6 rounded-lg transition"
-            >
-              {{ loadingReceipt ? 'Generating...' : 'Print Receipt' }}
-            </button>
-          </div>
-        </div>
-
         <!-- Goods Table -->
         <div class="overflow-x-auto">
           <table class="w-full border-collapse">
             <thead>
               <tr class="bg-gray-200 border-b-2 border-gray-400">
+                <th class="px-4 py-3 text-center text-sm font-semibold text-gray-800 w-12">
+                  <input
+                    type="checkbox"
+                    @change="toggleSelectAll"
+                    :checked="selectedGoods.length === (goods?.data?.length || 0) && (goods?.data?.length || 0) > 0"
+                    class="w-4 h-4 cursor-pointer"
+                  />
+                </th>
                 <th class="px-4 py-3 text-left text-sm font-semibold text-gray-800">Good Name</th>
                 <th class="px-4 py-3 text-left text-sm font-semibold text-gray-800">Vendor</th>
                 <th class="px-4 py-3 text-left text-sm font-semibold text-gray-800">Category</th>
@@ -129,6 +111,15 @@
             </thead>
             <tbody>
               <tr v-for="good in (goods?.data || [])" :key="good.id" class="border-b border-gray-200 hover:bg-gray-50">
+                <td class="px-4 py-3 text-center">
+                  <input
+                    type="checkbox"
+                    :value="good.id"
+                    @change="toggleGoodSelection(good)"
+                    :checked="selectedGoods.some(g => g.id === good.id)"
+                    class="w-4 h-4 cursor-pointer"
+                  />
+                </td>
                 <td class="px-4 py-3 text-sm text-gray-700">{{ good.name }}</td>
                 <td class="px-4 py-3 text-sm text-gray-700">{{ good.vendor?.user?.name || 'N/A' }}</td>
                 <td class="px-4 py-3 text-sm text-gray-700">{{ good.category?.name || 'N/A' }}</td>
@@ -149,6 +140,17 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Print Receipt Button -->
+        <div class="mt-6 flex justify-end gap-4">
+          <button
+            @click="handlePrintReceipt"
+            :disabled="selectedGoods.length === 0 || loadingReceipt"
+            class="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold py-2 px-6 rounded-lg transition"
+          >
+            {{ loadingReceipt ? 'Generating...' : `Print Receipt (${selectedGoods.length} items)` }}
+          </button>
         </div>
 
         <!-- Pagination -->
@@ -191,7 +193,7 @@ const filters = ref({
   end_date: props.filters?.end_date || '',
 });
 
-const selectedVendorForReceipt = ref('');
+const selectedGoods = ref([]);
 const loadingReceipt = ref(false);
 
 const paginationLinks = computed(() => {
@@ -230,14 +232,54 @@ const clearFilters = () => {
   router.visit('/inventory');
 };
 
+const toggleGoodSelection = (good) => {
+  const index = selectedGoods.value.findIndex(g => g.id === good.id);
+  if (index > -1) {
+    selectedGoods.value.splice(index, 1);
+  } else {
+    selectedGoods.value.push(good);
+  }
+};
+
+const toggleSelectAll = () => {
+  if (selectedGoods.value.length === (props.goods?.data?.length || 0)) {
+    selectedGoods.value = [];
+  } else {
+    selectedGoods.value = [...(props.goods?.data || [])];
+  }
+};
+
 const handlePrintReceipt = async () => {
+  if (selectedGoods.value.length === 0) {
+    alert('Please select at least one item');
+    return;
+  }
+
+  // Group selected goods by vendor
+  const vendorGroups = {};
+  selectedGoods.value.forEach(good => {
+    const vendorId = good.vendor_id;
+    if (!vendorGroups[vendorId]) {
+      vendorGroups[vendorId] = [];
+    }
+    vendorGroups[vendorId].push(good);
+  });
+
+  // If multiple vendors, show error
+  if (Object.keys(vendorGroups).length > 1) {
+    alert('Please select items from only one vendor');
+    return;
+  }
+
   loadingReceipt.value = true;
   try {
-    const response = await window.axios.post('/inventory/receipt', {
-      vendor_id: selectedVendorForReceipt.value,
+    const vendorId = Object.keys(vendorGroups)[0];
+    const response = await window.axios.post('/inventory/receipt/custom', {
+      vendor_id: vendorId,
+      goods: selectedGoods.value.map(g => ({ id: g.id, price: g.price, quantity: g.quantity })),
     });
-    // Receipt page will be rendered by the controller
     router.visit(`/inventory/receipt/${response.data.receipt.id}`);
+    selectedGoods.value = [];
   } catch (error) {
     console.error('Error printing receipt:', error);
     alert('Failed to generate receipt');

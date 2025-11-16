@@ -89,6 +89,43 @@ class InventoryController extends Controller
     }
 
     /**
+     * Print custom receipt with selected goods
+     */
+    public function printCustomReceipt(Request $request)
+    {
+        $validated = $request->validate([
+            'vendor_id' => 'required|exists:vendors,id',
+            'goods' => 'required|array',
+            'goods.*.id' => 'required|exists:goods,id',
+        ]);
+
+        $vendor = Vendor::with('user')->findOrFail($validated['vendor_id']);
+        $goodIds = array_column($validated['goods'], 'id');
+        $goods = Good::whereIn('id', $goodIds)
+            ->with('category')
+            ->get();
+
+        $totalAmount = $goods->sum(function ($good) {
+            return $good->price * $good->quantity;
+        });
+
+        // Create receipt record
+        $receipt = Receipt::create([
+            'vendor_id' => $vendor->id,
+            'user_id' => $request->user()->id,
+            'total_amount' => $totalAmount,
+            'printed_at' => now()->toDateString(),
+        ]);
+
+        return response()->json([
+            'receipt' => $receipt->load('user'),
+            'vendor' => $vendor,
+            'goods' => $goods,
+            'totalAmount' => $totalAmount,
+        ]);
+    }
+
+    /**
      * Show receipt page
      */
     public function showReceipt($receiptId)

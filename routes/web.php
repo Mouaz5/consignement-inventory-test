@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Inventory routes (for all authenticated users)
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
     Route::post('/inventory/receipt', [InventoryController::class, 'printReceipt'])->name('inventory.receipt');
+    Route::post('/inventory/receipt/custom', [InventoryController::class, 'printCustomReceipt'])->name('inventory.receipt.custom');
     Route::get('/inventory/receipt/{receiptId}', [InventoryController::class, 'showReceipt'])->name('inventory.receipt.show');
     Route::get('/inventory/vendor/{vendorId}/goods', [InventoryController::class, 'getVendorGoods'])->name('inventory.vendor.goods');
     
