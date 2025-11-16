@@ -55,14 +55,12 @@
 <script setup>
 import { ref } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
-import { useAuth } from '@/composables/useAuth';
 
 const props = defineProps({
   user: Object,
 });
 
 const isDropdownOpen = ref(false);
-const { logout } = useAuth();
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -78,7 +76,7 @@ const getInitials = (name) => {
     .slice(0, 2);
 };
 
-const handleLogout = async () => {
-  await logout();
+const handleLogout = () => {
+  router.post('/logout');
 };
 </script>

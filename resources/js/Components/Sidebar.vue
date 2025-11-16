@@ -42,6 +42,41 @@
         <span>Goods</span>
       </Link>
 
+      <!-- Admin Menu (if user is admin) -->
+      <div v-if="user?.role === 'admin'">
+        <p class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</p>
+        <Link
+          href="/admin/dashboard"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          :class="isActive('/admin/dashboard') ? 'bg-indigo-600' : ''"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>Dashboard</span>
+        </Link>
+        <Link
+          href="/admin/users"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          :class="isActive('/admin/users') ? 'bg-indigo-600' : ''"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 12H9m6 0a6 6 0 11-12 0 6 6 0 0112 0z" />
+          </svg>
+          <span>Users</span>
+        </Link>
+        <Link
+          href="/admin/vendors"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition"
+          :class="isActive('/admin/vendors') ? 'bg-indigo-600' : ''"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m0 0l8 4m-8-4v10l8 4m0-10l8 4m-8-4v10M7 12l8 4m0 0l8-4" />
+          </svg>
+          <span>Vendors</span>
+        </Link>
+      </div>
+
       <!-- Vendor Menu (if user is vendor) -->
       <div v-if="user?.role === 'vendor'">
         <p class="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Vendor</p>
@@ -75,21 +110,19 @@
 
 <script setup>
 import { computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import { useAuth } from '@/composables/useAuth';
+import { Link, usePage, router } from '@inertiajs/vue3';
 
 const props = defineProps({
   user: Object,
 });
 
 const page = usePage();
-const { logout } = useAuth();
 
 const isActive = (path) => {
   return page.url.startsWith(path);
 };
 
-const handleLogout = async () => {
-  await logout();
+const handleLogout = () => {
+  router.post('/logout');
 };
 </script>

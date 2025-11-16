@@ -6,11 +6,16 @@
         <p class="text-gray-600 mb-8">Sign in to your account</p>
 
         <!-- Error Messages -->
-        <div v-if="errors.email" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p class="text-red-700 text-sm">{{ errors.email[0] }}</p>
+        <div v-if="form.errors.email" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-700 text-sm">{{ form.errors.email }}</p>
         </div>
 
-        <form @submit.prevent="handleLogin" class="space-y-6">
+        <!-- General Error -->
+        <div v-if="generalError" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-700 text-sm">{{ generalError }}</p>
+        </div>
+
+        <form @submit.prevent="handleSubmit" class="space-y-6">
           <!-- Email Field -->
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
@@ -44,19 +49,17 @@
           <!-- Submit Button -->
           <button
             type="submit"
-            :disabled="loading"
+            :disabled="form.processing"
             class="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
           >
-            {{ loading ? 'Signing in...' : 'Sign In' }}
+            {{ form.processing ? 'Signing in...' : 'Sign In' }}
           </button>
         </form>
 
-        <!-- Register Link -->
+        <!-- Contact Admin -->
         <p class="mt-6 text-center text-gray-600">
-          Don't have an account?
-          <Link href="/register" class="text-indigo-600 hover:text-indigo-700 font-semibold">
-            Sign up
-          </Link>
+          Need an account?
+          <span class="text-indigo-600 font-semibold">Contact your administrator</span>
         </p>
       </div>
     </div>
@@ -65,39 +68,30 @@
 
 <script setup>
 import { ref } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { useForm } from '@inertiajs/vue3';
 
-const form = ref({
+const form = useForm({
   email: '',
   password: '',
 });
 
-const loading = ref(false);
-const errors = ref({});
+const generalError = ref('');
 
-const handleLogin = async () => {
-  loading.value = true;
-  errors.value = {};
-
-  try {
-    const response = await window.axios.post('/login', form.value);
-    
-    // Store token in localStorage
-    localStorage.setItem('auth_token', response.data.token);
-    
-    // Set default authorization header
-    window.axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-    
-    // Redirect to profile
-    router.visit('/profile');
-  } catch (error) {
-    if (error.response?.data?.errors) {
-      errors.value = error.response.data.errors;
-    } else if (error.response?.data?.message) {
-      errors.value.email = [error.response.data.message];
-    }
-  } finally {
-    loading.value = false;
-  }
+const handleSubmit = () => {
+  generalError.value = '';
+  
+  form.post('/login', {
+    onError: (errors) => {
+      console.error('Login errors:', errors);
+      if (errors.email) {
+        generalError.value = errors.email;
+      } else {
+        generalError.value = 'An error occurred during login. Please try again.';
+      }
+    },
+    onSuccess: (response) => {
+      console.log('Login successful, response:', response);
+    },
+  });
 };
 </script>

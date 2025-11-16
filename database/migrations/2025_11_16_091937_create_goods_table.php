@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('goods', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
+            $table->foreignId('vendor_id')->constrained('vendors');
+            $table->foreignId('category_id')->constrained('categories');
             $table->string('name');
             $table->string('description');
             $table->date('recived_date');

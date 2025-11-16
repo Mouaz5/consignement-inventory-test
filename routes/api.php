@@ -1,17 +1,21 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Admin\AdminController;
 
-// Public API routes
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
-
-// Protected API routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    });
-    Route::post('/logout', [AuthController::class, 'logout']);
+// Admin API routes
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/stats', [AdminController::class, 'getStats']);
+    
+    // Users management
+    Route::get('/users', [AdminController::class, 'getUsers']);
+    Route::post('/users', [AdminController::class, 'storeUser']);
+    Route::put('/users/{id}', [AdminController::class, 'updateUser']);
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
+    
+    // Vendors management
+    Route::get('/vendors', [AdminController::class, 'getVendors']);
+    Route::post('/vendors', [AdminController::class, 'storeVendor']);
+    Route::put('/vendors/{id}', [AdminController::class, 'updateVendor']);
+    Route::delete('/vendors/{id}', [AdminController::class, 'deleteVendor']);
 });

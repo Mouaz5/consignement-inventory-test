@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Inventory;
+use App\Http\Controllers\Controller;
 use App\Models\Good;
 use App\Models\Category;
 use App\Http\Requests\StoreGoodRequest;

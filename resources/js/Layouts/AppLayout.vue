@@ -17,22 +17,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import Sidebar from '@/Components/Sidebar.vue';
 import Navbar from '@/Components/Navbar.vue';
-import { useAuth } from '@/composables/useAuth';
 
-const { user: authUser, fetchUser } = useAuth();
-
-const user = computed(() => authUser.value);
-
-onMounted(async () => {
-  if (!user.value) {
-    try {
-      await fetchUser();
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-    }
-  }
-});
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
 </script>

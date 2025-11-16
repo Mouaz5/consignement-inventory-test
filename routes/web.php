@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\GoodsController;
-use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Inventory\CategoryController;
+use App\Http\Controllers\Inventory\GoodsController;
+use App\Http\Controllers\Inventory\InventoryController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -14,15 +14,25 @@ Route::get('/', function () {
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+    Route::get('/login', [LoginController::class, 'showLogin'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+});
+
+// Admin routes
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Admin/Dashboard');
+    })->name('admin.dashboard');
+    Route::get('/users', function () {
+        return Inertia::render('Admin/Users');
+    })->name('admin.users');
+    Route::get('/vendors', function () {
+        return Inertia::render('Admin/Vendors');
+    })->name('admin.vendors');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/user', [AuthController::class, 'user'])->name('user');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
