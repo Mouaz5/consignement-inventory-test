@@ -136,12 +136,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useForm, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const vendors = ref([]);
 const showCreateModal = ref(false);
 const editingVendor = ref(null);
-const form = ref({
+
+const form = useForm({
   name: '',
   email: '',
   phone: '',
@@ -155,7 +157,7 @@ onMounted(async () => {
 
 const loadVendors = async () => {
   try {
-    const response = await window.axios.get('/api/admin/vendors');
+    const response = await window.axios.get('/admin/vendors/list');
     vendors.value = response.data;
   } catch (error) {
     console.error('Failed to load vendors:', error);
@@ -164,50 +166,45 @@ const loadVendors = async () => {
 
 const editVendor = (vendor) => {
   editingVendor.value = vendor;
-  form.value = {
-    name: vendor.user?.name,
-    email: vendor.user?.email,
-    phone: vendor.phone,
-    address: vendor.address,
-    password: '',
-  };
+  form.name = vendor.user?.name;
+  form.email = vendor.user?.email;
+  form.phone = vendor.phone;
+  form.address = vendor.address;
+  form.password = '';
   showCreateModal.value = true;
 };
 
-const saveVendor = async () => {
-  try {
-    if (editingVendor.value) {
-      await window.axios.put(`/api/admin/vendors/${editingVendor.value.id}`, form.value);
-    } else {
-      await window.axios.post('/api/admin/vendors', form.value);
-    }
-    closeModal();
-    await loadVendors();
-  } catch (error) {
-    console.error('Failed to save vendor:', error);
+const saveVendor = () => {
+  if (editingVendor.value) {
+    form.put(`/admin/vendors/${editingVendor.value.id}`, {
+      onSuccess: () => {
+        closeModal();
+        loadVendors();
+      },
+    });
+  } else {
+    form.post('/admin/vendors', {
+      onSuccess: () => {
+        closeModal();
+        loadVendors();
+      },
+    });
   }
 };
 
-const deleteVendor = async (id) => {
+const deleteVendor = (id) => {
   if (confirm('Are you sure you want to delete this vendor?')) {
-    try {
-      await window.axios.delete(`/api/admin/vendors/${id}`);
-      await loadVendors();
-    } catch (error) {
-      console.error('Failed to delete vendor:', error);
-    }
+    router.delete(`/admin/vendors/${id}`, {
+      onSuccess: () => {
+        loadVendors();
+      },
+    });
   }
 };
 
 const closeModal = () => {
   showCreateModal.value = false;
   editingVendor.value = null;
-  form.value = {
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    password: '',
-  };
+  form.reset();
 };
 </script>

@@ -136,12 +136,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useForm, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const users = ref([]);
 const showCreateModal = ref(false);
 const editingUser = ref(null);
-const form = ref({
+
+const form = useForm({
   name: '',
   email: '',
   phone: '',
@@ -155,7 +157,7 @@ onMounted(async () => {
 
 const loadUsers = async () => {
   try {
-    const response = await window.axios.get('/api/admin/users');
+    const response = await window.axios.get('/admin/users/list');
     users.value = response.data;
   } catch (error) {
     console.error('Failed to load users:', error);
@@ -164,50 +166,45 @@ const loadUsers = async () => {
 
 const editUser = (user) => {
   editingUser.value = user;
-  form.value = {
-    name: user.name,
-    email: user.email,
-    phone: user.phone,
-    address: user.address,
-    password: '',
-  };
+  form.name = user.name;
+  form.email = user.email;
+  form.phone = user.phone;
+  form.address = user.address;
+  form.password = '';
   showCreateModal.value = true;
 };
 
-const saveUser = async () => {
-  try {
-    if (editingUser.value) {
-      await window.axios.put(`/api/admin/users/${editingUser.value.id}`, form.value);
-    } else {
-      await window.axios.post('/api/admin/users', form.value);
-    }
-    closeModal();
-    await loadUsers();
-  } catch (error) {
-    console.error('Failed to save user:', error);
+const saveUser = () => {
+  if (editingUser.value) {
+    form.put(`/admin/users/${editingUser.value.id}`, {
+      onSuccess: () => {
+        closeModal();
+        loadUsers();
+      },
+    });
+  } else {
+    form.post('/admin/users', {
+      onSuccess: () => {
+        closeModal();
+        loadUsers();
+      },
+    });
   }
 };
 
-const deleteUser = async (id) => {
+const deleteUser = (id) => {
   if (confirm('Are you sure you want to delete this user?')) {
-    try {
-      await window.axios.delete(`/api/admin/users/${id}`);
-      await loadUsers();
-    } catch (error) {
-      console.error('Failed to delete user:', error);
-    }
+    router.delete(`/admin/users/${id}`, {
+      onSuccess: () => {
+        loadUsers();
+      },
+    });
   }
 };
 
 const closeModal = () => {
   showCreateModal.value = false;
   editingUser.value = null;
-  form.value = {
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    password: '',
-  };
+  form.reset();
 };
 </script>

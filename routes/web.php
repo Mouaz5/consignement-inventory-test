@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\InventoryController;
+use App\Http\Controllers\Admin\AdminController;
 
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
@@ -23,12 +24,27 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard');
     })->name('admin.dashboard');
+    
+    // Stats endpoint
+    Route::get('/stats', [AdminController::class, 'getStats'])->name('admin.stats');
+    
+    // Users management
     Route::get('/users', function () {
         return Inertia::render('Admin/Users');
     })->name('admin.users');
+    Route::get('/users/list', [AdminController::class, 'getUsers'])->name('admin.users.list');
+    Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    
+    // Vendors management
     Route::get('/vendors', function () {
         return Inertia::render('Admin/Vendors');
     })->name('admin.vendors');
+    Route::get('/vendors/list', [AdminController::class, 'getVendors'])->name('admin.vendors.list');
+    Route::post('/vendors', [AdminController::class, 'storeVendor'])->name('admin.vendors.store');
+    Route::put('/vendors/{id}', [AdminController::class, 'updateVendor'])->name('admin.vendors.update');
+    Route::delete('/vendors/{id}', [AdminController::class, 'deleteVendor'])->name('admin.vendors.delete');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

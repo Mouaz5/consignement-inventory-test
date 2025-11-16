@@ -78,9 +78,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
+const page = usePage();
 const stats = ref({
   totalUsers: 0,
   totalVendors: 0,
@@ -89,7 +90,7 @@ const stats = ref({
 
 onMounted(async () => {
   try {
-    const response = await window.axios.get('/api/admin/stats');
+    const response = await window.axios.get('/admin/stats');
     stats.value = response.data;
   } catch (error) {
     console.error('Failed to load stats:', error);
