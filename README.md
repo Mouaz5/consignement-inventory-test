@@ -23,14 +23,112 @@ A modern web application for managing consignment inventory with vendor manageme
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+### Option 1: Local Development (without Docker)
 
 - **PHP** 8.2 or higher
 - **Composer** (PHP package manager)
 - **Node.js** 18+ and npm
 - **Git**
 
+### Option 2: Docker Development (Recommended)
+
+- **Docker** and **Docker Compose**
+- **Git**
+
+No need to install PHP, Composer, or Node.js locally!
+
 ## Installation & Setup
+
+### Using Docker (Recommended)
+
+#### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd consignment-inventory
+```
+
+#### 2. Copy Environment File
+
+```bash
+cp .env.example .env
+```
+
+#### 3. Start Docker Containers
+
+```bash
+./vendor/bin/sail up -d
+```
+
+This will start:
+- Laravel application (PHP + Nginx)
+- MySQL database
+- Redis cache
+- Mailpit (email testing)
+
+#### 4. Generate Application Key
+
+```bash
+./vendor/bin/sail artisan key:generate
+```
+
+#### 5. Install Dependencies
+
+```bash
+./vendor/bin/sail composer install
+./vendor/bin/sail npm install
+```
+
+#### 6. Run Migrations
+
+```bash
+./vendor/bin/sail artisan migrate
+```
+
+#### 7. Build Assets
+
+```bash
+./vendor/bin/sail npm run dev
+```
+
+The application will be available at `http://localhost`
+
+#### Useful Sail Commands
+
+```bash
+# Start containers
+./vendor/bin/sail up -d
+
+# Stop containers
+./vendor/bin/sail down
+
+# View logs
+./vendor/bin/sail logs
+
+# Run artisan commands
+./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan tinker
+
+# Run npm commands
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run dev
+./vendor/bin/sail npm run build
+
+# Access database
+./vendor/bin/sail mysql
+
+# Run tests
+./vendor/bin/sail test
+```
+
+#### Accessing Services
+
+- **Application**: http://localhost
+- **Mailpit (Email Testing)**: http://localhost:8025
+- **MySQL**: localhost:3306 (user: sail, password: password)
+- **Redis**: localhost:6379
+
+### Local Development (without Docker)
 
 ### 1. Clone the Repository
 
