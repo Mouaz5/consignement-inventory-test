@@ -1,9 +1,10 @@
 <template>
   <nav class="bg-white shadow-md">
     <div class="px-6 py-4 flex items-center justify-between">
-      <!-- Logo/Title -->
+      <!-- Logo/Title (only for regular users) -->
       <div class="flex items-center">
-        <h1 class="text-2xl font-bold text-indigo-600">Consignment</h1>
+        <h1 v-if="user?.role !== 'vendor'" class="text-2xl font-bold text-indigo-600">User</h1>
+        <h1 v-else class="text-2xl font-bold text-indigo-600">Vendor</h1>
       </div>
 
       <!-- Profile Icon and Dropdown -->
