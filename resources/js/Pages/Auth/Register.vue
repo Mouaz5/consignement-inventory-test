@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8">
     <div class="w-full max-w-md">
       <div class="bg-white rounded-lg shadow-lg p-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
@@ -14,7 +14,7 @@
           </ul>
         </div>
 
-        <form @submit.prevent="handleRegister" class="space-y-6">
+        <form @submit.prevent="handleRegister" class="space-y-4">
           <!-- Name Field -->
           <div>
             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -43,6 +43,53 @@
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
               placeholder="you@example.com"
             />
+          </div>
+
+          <!-- Phone Field -->
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+              Phone Number
+            </label>
+            <input
+              id="phone"
+              v-model="form.phone"
+              type="tel"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+              placeholder="+1 (555) 000-0000"
+            />
+          </div>
+
+          <!-- Address Field -->
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
+              Address
+            </label>
+            <input
+              id="address"
+              v-model="form.address"
+              type="text"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+              placeholder="123 Main St, City, State"
+            />
+          </div>
+
+          <!-- Role Selection -->
+          <div>
+            <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+              Account Type
+            </label>
+            <select
+              id="role"
+              v-model="form.role"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+            >
+              <option value="">Select account type</option>
+              <option value="user">Regular User</option>
+              <option value="vendor">Vendor</option>
+            </select>
           </div>
 
           <!-- Password Field -->
@@ -105,6 +152,9 @@ import { Link, router } from '@inertiajs/vue3';
 const form = ref({
   name: '',
   email: '',
+  phone: '',
+  address: '',
+  role: '',
   password: '',
   password_confirmation: '',
 });
@@ -125,8 +175,8 @@ const handleRegister = async () => {
     // Set default authorization header
     window.axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
     
-    // Redirect to dashboard or home
-    router.visit('/');
+    // Redirect to profile
+    router.visit('/profile');
   } catch (error) {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;

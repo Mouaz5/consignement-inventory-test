@@ -88,8 +88,8 @@ const handleLogin = async () => {
     // Set default authorization header
     window.axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
     
-    // Redirect to dashboard or home
-    router.visit('/');
+    // Redirect to profile
+    router.visit('/profile');
   } catch (error) {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;

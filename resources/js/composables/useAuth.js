@@ -11,6 +11,7 @@ export function useAuth() {
       const response = await window.axios.post('/login', { email, password });
       setToken(response.data.token);
       setUser(response.data.user);
+      window.axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       return response.data;
     } catch (error) {
       throw error;
@@ -27,6 +28,7 @@ export function useAuth() {
       });
       setToken(response.data.token);
       setUser(response.data.user);
+      window.axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       return response.data;
     } catch (error) {
       throw error;
