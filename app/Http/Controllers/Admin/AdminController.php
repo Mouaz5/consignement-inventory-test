@@ -53,7 +53,7 @@ class AdminController extends Controller
             'role' => 'user',
         ]);
 
-        return response()->json($user, 201);
+        return redirect('/admin/users')->with('success', 'User created successfully');
     }
 
     /**
@@ -72,7 +72,7 @@ class AdminController extends Controller
 
         $user->update($validated);
 
-        return response()->json($user);
+        return redirect('/admin/users')->with('success', 'User updated successfully');
     }
 
     /**
@@ -83,7 +83,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return redirect('/admin/users')->with('success', 'User deleted successfully');
     }
 
     /**
@@ -125,7 +125,7 @@ class AdminController extends Controller
             'address' => $validated['address'],
         ]);
 
-        return response()->json($vendor->load('user'), 201);
+        return redirect('/admin/vendors')->with('success', 'Vendor created successfully');
     }
 
     /**
@@ -154,7 +154,7 @@ class AdminController extends Controller
             'address' => $validated['address'],
         ]);
 
-        return response()->json($vendor->load('user'));
+        return redirect('/admin/vendors')->with('success', 'Vendor updated successfully');
     }
 
     /**
@@ -166,6 +166,6 @@ class AdminController extends Controller
         $vendor->user->delete();
         $vendor->delete();
 
-        return response()->json(['message' => 'Vendor deleted successfully']);
+        return redirect('/admin/vendors')->with('success', 'Vendor deleted successfully');
     }
 }

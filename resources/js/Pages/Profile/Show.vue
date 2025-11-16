@@ -5,22 +5,18 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
         <p class="text-gray-600 mb-8">Manage your account information</p>
 
-        <!-- Success Message -->
-        <div v-if="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p class="text-green-700">{{ successMessage }}</p>
-        </div>
-
         <!-- Error Messages -->
-        <div v-if="Object.keys(errors).length > 0" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div v-if="form.errors.name || form.errors.email || form.errors.phone || form.errors.address" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <ul class="text-red-700 text-sm space-y-1">
-            <li v-for="(messages, field) in errors" :key="field">
-              {{ messages[0] }}
-            </li>
+            <li v-if="form.errors.name">{{ form.errors.name }}</li>
+            <li v-if="form.errors.email">{{ form.errors.email }}</li>
+            <li v-if="form.errors.phone">{{ form.errors.phone }}</li>
+            <li v-if="form.errors.address">{{ form.errors.address }}</li>
           </ul>
         </div>
 
         <!-- Profile Form -->
-        <form @submit.prevent="handleUpdate" class="space-y-6">
+        <form @submit.prevent="form.put('/profile')" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Name Field -->
             <div>
@@ -100,10 +96,10 @@
           <div class="flex gap-4">
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="form.processing"
               class="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
             >
-              {{ loading ? 'Saving...' : 'Save Changes' }}
+              {{ form.processing ? 'Saving...' : 'Save Changes' }}
             </button>
             <Link
               href="/"
@@ -119,55 +115,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { useForm, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
   user: Object,
 });
 
-const form = ref({
-  name: '',
-  email: '',
-  phone: '',
-  address: '',
+const form = useForm({
+  name: props.user.name,
+  email: props.user.email,
+  phone: props.user.phone,
+  address: props.user.address,
 });
-
-const loading = ref(false);
-const errors = ref({});
-const successMessage = ref('');
-
-onMounted(() => {
-  form.value = {
-    name: props.user.name,
-    email: props.user.email,
-    phone: props.user.phone,
-    address: props.user.address,
-  };
-});
-
-const handleUpdate = async () => {
-  loading.value = true;
-  errors.value = {};
-  successMessage.value = '';
-
-  try {
-    const response = await window.axios.put('/profile', form.value);
-    successMessage.value = response.data.message;
-    setTimeout(() => {
-      successMessage.value = '';
-    }, 3000);
-  } catch (error) {
-    if (error.response?.data?.errors) {
-      errors.value = error.response.data.errors;
-    } else if (error.response?.data?.message) {
-      errors.value.general = [error.response.data.message];
-    }
-  } finally {
-    loading.value = false;
-  }
-};
 
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {

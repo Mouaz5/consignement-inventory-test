@@ -5,15 +5,18 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Add New Good</h1>
 
         <!-- Error Messages -->
-        <div v-if="Object.keys(errors).length > 0" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div v-if="form.errors.name || form.errors.description || form.errors.price || form.errors.quantity || form.errors.recived_date || form.errors.category_id" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
           <ul class="text-red-700 text-sm space-y-1">
-            <li v-for="(messages, field) in errors" :key="field">
-              {{ messages[0] }}
-            </li>
+            <li v-if="form.errors.name">{{ form.errors.name }}</li>
+            <li v-if="form.errors.description">{{ form.errors.description }}</li>
+            <li v-if="form.errors.price">{{ form.errors.price }}</li>
+            <li v-if="form.errors.quantity">{{ form.errors.quantity }}</li>
+            <li v-if="form.errors.recived_date">{{ form.errors.recived_date }}</li>
+            <li v-if="form.errors.category_id">{{ form.errors.category_id }}</li>
           </ul>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form @submit.prevent="form.post('/vendor/goods')" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Good Name -->
             <div>
@@ -132,10 +135,10 @@
           <div class="flex gap-4">
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="form.processing"
               class="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition"
             >
-              {{ loading ? 'Creating...' : 'Create Good' }}
+              {{ form.processing ? 'Creating...' : 'Create Good' }}
             </button>
             <Link
               href="/vendor/goods"
@@ -151,15 +154,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { Link, router } from '@inertiajs/vue3';
+import { computed } from 'vue';
+import { useForm, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
 const props = defineProps({
   categories: Array,
 });
 
-const form = ref({
+const form = useForm({
   name: '',
   description: '',
   price: '',
@@ -168,30 +171,9 @@ const form = ref({
   category_id: '',
 });
 
-const loading = ref(false);
-const errors = ref({});
-
 const totalValue = computed(() => {
-  const price = parseFloat(form.value.price) || 0;
-  const quantity = parseFloat(form.value.quantity) || 0;
+  const price = parseFloat(form.price) || 0;
+  const quantity = parseFloat(form.quantity) || 0;
   return price * quantity;
 });
-
-const handleSubmit = async () => {
-  loading.value = true;
-  errors.value = {};
-
-  try {
-    const response = await window.axios.post('/vendor/goods', form.value);
-    router.visit('/vendor/goods');
-  } catch (error) {
-    if (error.response?.data?.errors) {
-      errors.value = error.response.data.errors;
-    } else if (error.response?.data?.message) {
-      errors.value.general = [error.response.data.message];
-    }
-  } finally {
-    loading.value = false;
-  }
-};
 </script>

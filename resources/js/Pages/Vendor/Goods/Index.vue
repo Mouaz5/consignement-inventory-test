@@ -120,18 +120,16 @@ const formatDate = (date) => {
   });
 };
 
-const deleteGood = async (goodId) => {
+const deleteGood = (goodId) => {
   if (!confirm('Are you sure you want to delete this good?')) return;
 
-  try {
-    await window.axios.delete(`/vendor/goods/${goodId}`);
-    successMessage.value = 'Good deleted successfully';
-    setTimeout(() => {
-      router.visit('/vendor/goods');
-    }, 1000);
-  } catch (error) {
-    console.error('Error deleting good:', error);
-    alert('Failed to delete good');
-  }
+  router.delete(`/vendor/goods/${goodId}`, {
+    onSuccess: () => {
+      successMessage.value = 'Good deleted successfully';
+    },
+    onError: () => {
+      alert('Failed to delete good');
+    },
+  });
 };
 </script>

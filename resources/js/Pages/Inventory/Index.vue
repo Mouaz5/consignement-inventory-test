@@ -249,7 +249,7 @@ const toggleSelectAll = () => {
   }
 };
 
-const handlePrintReceipt = async () => {
+const handlePrintReceipt = () => {
   if (selectedGoods.value.length === 0) {
     alert('Please select at least one item');
     return;
@@ -271,21 +271,18 @@ const handlePrintReceipt = async () => {
     return;
   }
 
-  loadingReceipt.value = true;
-  try {
-    const vendorId = Object.keys(vendorGroups)[0];
-    const response = await window.axios.post('/inventory/receipt/custom', {
-      vendor_id: vendorId,
-      goods: selectedGoods.value.map(g => ({ id: g.id, price: g.price, quantity: g.quantity })),
-    });
-    router.visit(`/inventory/receipt/${response.data.receipt.id}`);
-    selectedGoods.value = [];
-  } catch (error) {
-    console.error('Error printing receipt:', error);
-    alert('Failed to generate receipt');
-  } finally {
-    loadingReceipt.value = false;
-  }
+  const vendorId = Object.keys(vendorGroups)[0];
+  router.post('/inventory/receipt/custom', {
+    vendor_id: vendorId,
+    goods: selectedGoods.value.map(g => ({ id: g.id, price: g.price, quantity: g.quantity })),
+  }, {
+    onSuccess: (response) => {
+      selectedGoods.value = [];
+    },
+    onError: () => {
+      alert('Failed to generate receipt');
+    },
+  });
 };
 
 const formatDate = (date) => {

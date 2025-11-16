@@ -4,21 +4,17 @@
       <div class="bg-white rounded-lg shadow-lg p-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Add New Category</h1>
 
-        <!-- Error Messages -->
-        <div v-if="Object.keys(errors).length > 0" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <ul class="text-red-700 text-sm space-y-1">
-            <li v-for="(messages, field) in errors" :key="field">
-              {{ messages[0] }}
-            </li>
-          </ul>
-        </div>
-
         <!-- Success Message -->
-        <div v-if="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p class="text-green-700">{{ successMessage }}</p>
+        <div v-if="page.props.flash?.success" class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <p class="text-green-700 text-sm">{{ page.props.flash.success }}</p>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <!-- Error Messages -->
+        <div v-if="form.errors.name" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-red-700 text-sm">{{ form.errors.name }}</p>
+        </div>
+
+        <form @submit.prevent="form.post('/categories')" class="space-y-6">
           <!-- Category Name -->
           <div>
             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -39,10 +35,10 @@
           <div class="flex gap-4">
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="form.processing"
               class="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition"
             >
-              {{ loading ? 'Creating...' : 'Create Category' }}
+              {{ form.processing ? 'Creating...' : 'Create Category' }}
             </button>
             <button
               type="button"
@@ -59,39 +55,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { useForm, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 
-const form = ref({
+const page = usePage();
+
+const form = useForm({
   name: '',
 });
-
-const loading = ref(false);
-const errors = ref({});
-const successMessage = ref('');
-
-const handleSubmit = async () => {
-  loading.value = true;
-  errors.value = {};
-  successMessage.value = '';
-
-  try {
-    const response = await window.axios.post('/categories', form.value);
-    successMessage.value = response.data.message;
-    setTimeout(() => {
-      goBack();
-    }, 1500);
-  } catch (error) {
-    if (error.response?.data?.errors) {
-      errors.value = error.response.data.errors;
-    } else if (error.response?.data?.message) {
-      errors.value.general = [error.response.data.message];
-    }
-  } finally {
-    loading.value = false;
-  }
-};
 
 const goBack = () => {
   window.history.back();

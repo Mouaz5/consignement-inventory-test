@@ -40,9 +40,6 @@ class ProfileController extends Controller
             ]);
         }
 
-        return response()->json([
-            'user' => $user->load('vendor'),
-            'message' => 'Profile updated successfully',
-        ]);
+        return redirect()->back()->with('success', 'Profile updated successfully');
     }
 }

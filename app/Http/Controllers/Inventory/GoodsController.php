@@ -60,7 +60,7 @@ class GoodsController extends Controller
         $vendor = $request->user()->vendor;
 
         if (!$vendor) {
-            return response()->json(['error' => 'Only vendors can manage goods'], 403);
+            return redirect('/vendor/goods')->with('error', 'Only vendors can manage goods');
         }
 
         $validated = $request->validated();
@@ -70,10 +70,7 @@ class GoodsController extends Controller
             'vendor_id' => $vendor->id,
         ]);
 
-        return response()->json([
-            'good' => $good->load('category'),
-            'message' => 'Good created successfully',
-        ], 201);
+        return redirect('/vendor/goods')->with('success', 'Good created successfully');
     }
 
     /**
@@ -103,17 +100,14 @@ class GoodsController extends Controller
         $vendor = $request->user()->vendor;
 
         if (!$vendor || $good->vendor_id !== $vendor->id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect('/vendor/goods')->with('error', 'Unauthorized');
         }
 
         $validated = $request->validated();
 
         $good->update($validated);
 
-        return response()->json([
-            'good' => $good->load('category'),
-            'message' => 'Good updated successfully',
-        ]);
+        return redirect('/vendor/goods')->with('success', 'Good updated successfully');
     }
 
     /**
@@ -124,11 +118,11 @@ class GoodsController extends Controller
         $vendor = $request->user()->vendor;
 
         if (!$vendor || $good->vendor_id !== $vendor->id) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return redirect('/vendor/goods')->with('error', 'Unauthorized');
         }
 
         $good->delete();
 
-        return response()->json(['message' => 'Good deleted successfully']);
+        return redirect('/vendor/goods')->with('success', 'Good deleted successfully');
     }
 }

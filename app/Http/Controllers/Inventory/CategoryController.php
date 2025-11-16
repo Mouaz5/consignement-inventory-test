@@ -25,9 +25,6 @@ class CategoryController extends Controller
 
         $category = Category::create($validated);
 
-        return response()->json([
-            'category' => $category,
-            'message' => 'Category created successfully',
-        ], 201);
+        return redirect()->back()->with('success', 'Category created successfully');
     }
 }

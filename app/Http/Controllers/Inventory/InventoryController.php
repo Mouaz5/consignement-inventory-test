@@ -80,12 +80,7 @@ class InventoryController extends Controller
             'printed_at' => now()->toDateString(),
         ]);
 
-        return response()->json([
-            'receipt' => $receipt->load('user'),
-            'vendor' => $vendor,
-            'goods' => $goods,
-            'totalAmount' => $totalAmount,
-        ]);
+        return redirect("/inventory/receipt/{$receipt->id}");
     }
 
     /**
@@ -113,12 +108,7 @@ class InventoryController extends Controller
             'printed_at' => now()->toDateString(),
         ]);
 
-        return response()->json([
-            'receipt' => $receipt->load('user'),
-            'vendor' => $vendor,
-            'goods' => $goods,
-            'totalAmount' => $totalAmount,
-        ]);
+        return redirect("/inventory/receipt/{$receipt->id}");
     }
 
     /**
