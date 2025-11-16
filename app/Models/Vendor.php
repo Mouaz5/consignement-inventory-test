@@ -16,4 +16,14 @@ class Vendor extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function goods()
+    {
+        return $this->hasMany(Good::class);
+    }
+
+    public function receipts()
+    {
+        return $this->hasMany(Receipt::class);
+    }
 }
