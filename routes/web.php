@@ -9,7 +9,7 @@ use App\Http\Controllers\Inventory\GoodsController;
 use App\Http\Controllers\Inventory\InventoryController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome');
+    return Inertia::render('Auth/Login');
 });
 
 // Authentication routes
